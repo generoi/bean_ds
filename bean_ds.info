@@ -1,0 +1,6 @@
+name = Bean DS
+description = Improve Bean and DS integrations
+dependencies[] = bean
+dependencies[] = ds
+package = custom
+core = 7.x

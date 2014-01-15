@@ -1,0 +1,64 @@
+<?php
+
+/**
+ * @file bean_ds.module
+ */
+
+/**
+ * Implements hook_field_extra_fields().
+ */
+function bean_ds_field_extra_fields_alter(&$info) {
+  // Remove the default Bean field from the display UI.
+  foreach (bean_get_types() as $type) {
+    unset($info['bean'][$type->type]['display']['title']);
+  }
+}
+
+/**
+ * Implements hook_ds_fields_info().
+ */
+function bean_ds_ds_fields_info($entity_type) {
+  $fields['bean']['title'] = array(
+    'title' => t('Title'),
+    'field_type' => DS_FIELD_TYPE_FUNCTION,
+    'function' => 'ds_render_field',
+    'properties' => array(
+      'entity_render_key' => 'title',
+      'settings' => array(
+        'link' => array('type' => 'select', 'options' => array('no', 'yes')),
+        'wrapper' => array('type' => 'textfield', 'description' => t('Eg: h1, h2, p')),
+        'class' => array('type' => 'textfield', 'description' => t('Put a class on the wrapper. Eg: block-title')),
+      ),
+      'default' => array('wrapper' => 'h2', 'link' => 0, 'class' => ''),
+    ),
+  );
+  if (isset($fields[$entity_type])) {
+    return array($entity_type => $fields[$entity_type]);
+  }
+}
+
+
+/**
+ * Implements hook_ds_field_settings_form().
+ */
+function bean_ds_ds_field_settings_form($field) {
+  return ds_ds_field_settings_form($field);
+}
+
+
+/**
+ * Implements hook_ds_field_format_summary().
+ */
+function bean_ds_ds_field_format_summary($field) {
+  return ds_ds_field_format_summary($field);
+}
+
+/**
+ * Implements hook_block_view_alter().
+ */
+function bean_ds_block_view_alter(&$data, $block) {
+  // Hide the block title if it's a bean. The bean renders it itself.
+  if ($block->module == 'bean') {
+    $data['subject'] = NULL;
+  }
+}
